@@ -1,0 +1,26 @@
+{
+  "name": "MySQNodazon",
+  "version": "1.0.0",
+  "description": "",
+  "main": "bamazonCustomer.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/kmumford123/MySQNodazon.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/kmumford123/MySQNodazon/issues"
+  },
+  "homepage": "https://github.com/kmumford123/MySQNodazon#readme",
+  "dependencies": {
+    "fs": "0.0.1-security",
+    "inquirer": "^5.1.0",
+    "mysql": "^2.15.0",
+    "node-mysql-importer": "0.0.10"
+  }
+}
