@@ -1,74 +1,83 @@
 var inquirer = require("inquirer");
 var mysql = require('mysql');
-var importMysql = require('node-mysql-importer')
-var keys = require("./keys.js");
-var Database = require('./zon.sql');
 
-var dbpwd = new dbpwd(keys.dbpwd);
+var connect = mysql.createConnection({
+    host: "localhost",
+    user: "root",
+    password: "b!gPh@rma23",
+    database: "bamazon"
+});
 
-'use strict'
-const importer = require('node-mysql-importer')
-
-importer.config({
-    'host': 'localhost',
-    'user': 'root',
-    'password': dbpwd,
-    'database': 'bamazon'
-})
-
-importer.importSQL('./zon.sql').then(() => {
-    console.log('all statements have been executed')
-}).catch(err => {
-    console.log(`error: ${err}`)
-})
-
-
-
-// var connect = mysql.createConnection({
-//     host: "localhost",
-//     user: "root",
-//     password: dbpwd,
-//     database: "bamazon"
-// });
-
-var productIDS = con.connect(function(err) {
+connect.connect(function(err) {
     if (err) throw err;
-    con.query("SELECT item_id FROM products", function(err, result, fields) {
-        if (err) throw err;
-        console.log(result);
-    });
+    getList();
 });
 
-inquirer.prompt([{
-        type: "list",
-        name: "Start",
-        message: "Select your product ID?",
-        choices: ProductIDs
-    },
-    {
-        type: "input",
-        name: "Units",
-        message: "How many do you wish?"
-    }
-]).then(function(selection) {
-    var itemCheck = con.connect(function(err) {
-        if (err) throw err;
-        con.query(`SELECT stock_quantity FROM products WHERE item_id = '${selection.Start}'`, function(err, result, fields) {
-            if (err) throw err;
-            return result;
-        });
-    });
-    if (itemCheck < selection.Units) {
-        console.log('Insufficient Quantity, go around the kona!!!');
-    } else {
-        var newQuantity = itemCheck - selection.Units;
-        var updateItem = con.connect(function(err) {
-            if (err) throw err;
-            con.query(`UPDATE products set stock_quantity = ${newQuantity} products WHERE item_id = '${selection.Start}'`, function(err, result, fields) {
-                if (err) throw err;
-                console.log(`there are ${result} of these remaining`);
+function getList() {
+    connect.query("SELECT * from products", function(err, result) {
+        inquirer.prompt([{
+                    name: "Start",
+                    type: "list",
+                    message: "Enter your product ID?",
+                    choices: function() {
+                        var choiceArray = result.map((row) => row.item_id.toString());
+                        return choiceArray
+                    }
+                },
+                {
+                    type: "input",
+                    name: "Units",
+                    message: "How many do you wish?"
+                }
+            ])
+            .then(function(selection) {
+                connect.query("SELECT * from products", function(err, result) {
+                    if (err) throw err;
+                    var prodQuantity = result[selection.Start].stock_quantity
+
+                    if (selection.Units <= prodQuantity) {
+                        connect.query(
+                            "UPDATE products SET ? WHERE ?", [{
+                                    stock_quantity: prodQuantity - selection.Units
+                                },
+                                {
+                                    item_id: +selection.Start
+                                }
+                            ],
+                            function(error) {
+                                if (error) throw err;
+                                console.log("Product added successfully!");
+                                inquirer.prompt([{
+                                        type: "boolean",
+                                        name: "again",
+                                        message: "Would you like to purchase another?",
+                                        default: true
+                                    }])
+                                    .then(function(moreItems) {
+                                        if (moreItems.again) {
+                                            getList();
+                                        } else {
+                                            proces.exit();
+                                        }
+                                    });
+                            });
+                    } else {
+                        console.log('Insufficient Quantity, go around the kona!!!');
+                        inquirer.prompt([{
+                                type: "boolean",
+                                name: "again",
+                                message: "Would you like to purchase another?",
+                                default: false
+                            }])
+                            .then(function(moreItems) {
+                                if (moreItems.again) {
+                                    getList();
+                                } else {
+                                    proces.exit();
+                                }
+                            });
+                    }
+                });
             });
-            return selection.Units;
-        });
-    };
-});
+    });
+};

@@ -1,3 +1,4 @@
+DROP DATABASE IF EXISTS bamazon;
 CREATE DATABASE bamazon;
 
 USE bamazon;
@@ -22,5 +23,11 @@ VALUES ("Rocket Skooter", "Sports & Outdoors", 10.99, 80),
 ("Suit", "Clothing, Shoes & Jewelry", 4.99, 235),
 ("Towels", "Home, Garden, Pets & Tools", 25.99, 95),
 ("Kleenex Hand Towels", "Health & Household", 13.44, 3000);
+
+CREATE TABLE department (
+    dep_id INT(10), AUTO_INCREMENT NOT NULL,
+    department_name VARCHAR (45),
+    over_head_costs INT (10)
+)
 
 
