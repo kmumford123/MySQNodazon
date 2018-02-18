@@ -6,7 +6,7 @@ USE bamazon;
 CREATE TABLE products (
    item_id INTEGER(10) AUTO_INCREMENT NOT NULL,
    product_name VARCHAR( 29),
-   department_name VARCHAR (30),
+   department_name VARCHAR (60),
    price DECIMAL (5,2),
    stock_quantity INTEGER (10),
    PRIMARY KEY (item_id)
@@ -24,10 +24,12 @@ VALUES ("Rocket Skooter", "Sports & Outdoors", 10.99, 80),
 ("Towels", "Home, Garden, Pets & Tools", 25.99, 95),
 ("Kleenex Hand Towels", "Health & Household", 13.44, 3000);
 
-CREATE TABLE department (
-    dep_id INT(10), AUTO_INCREMENT NOT NULL,
-    department_name VARCHAR (45),
-    over_head_costs INT (10)
-)
+SELECT * FROM products where stock_quantity < 5;
 
-
+create table departments (
+department_id integer (10) auto_increment not null,
+department_name varchar(250),
+over_head_costs decimal(10,2),
+total_profit decimal(10,2),
+primary key (department_id)
+);

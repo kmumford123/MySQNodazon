@@ -20,8 +20,7 @@ function getList() {
                     type: "list",
                     message: "Enter your product ID?",
                     choices: function() {
-                        var choiceArray = result.map((row) => row.item_id.toString());
-                        return choiceArray
+                        return result.map((row) => `${row.item_id}`);
                     }
                 },
                 {
@@ -33,12 +32,16 @@ function getList() {
             .then(function(selection) {
                 connect.query("SELECT * from products", function(err, result) {
                     if (err) throw err;
-                    var prodQuantity = result[selection.Start].stock_quantity
+                    var prodQuantity = result[selection.Start - 1].stock_quantity
+                    var salesUpdate = +selection.Units * result[selection.Units - 1].price
+                    console.log(salesUpdate);
 
                     if (selection.Units <= prodQuantity) {
+                        var qtyupdate = prodQuantity - selection.Units;
                         connect.query(
                             "UPDATE products SET ? WHERE ?", [{
-                                    stock_quantity: prodQuantity - selection.Units
+                                    stock_quantity: qtyupdate,
+                                    product_sales: salesUpdate
                                 },
                                 {
                                     item_id: +selection.Start
@@ -46,15 +49,16 @@ function getList() {
                             ],
                             function(error) {
                                 if (error) throw err;
-                                console.log("Product added successfully!");
+                                console.log(`Transaction Complete!!! ${qtyupdate} left in stock.`);
                                 inquirer.prompt([{
-                                        type: "boolean",
+                                        type: "list",
                                         name: "again",
                                         message: "Would you like to purchase another?",
-                                        default: true
+                                        choices: ["Yes", "No"],
+                                        default: "Yes"
                                     }])
                                     .then(function(moreItems) {
-                                        if (moreItems.again) {
+                                        if (moreItems.again == "Yes") {
                                             getList();
                                         } else {
                                             proces.exit();
@@ -64,13 +68,14 @@ function getList() {
                     } else {
                         console.log('Insufficient Quantity, go around the kona!!!');
                         inquirer.prompt([{
-                                type: "boolean",
+                                type: "list",
                                 name: "again",
                                 message: "Would you like to purchase another?",
-                                default: false
+                                choices: ["Yes", "No"],
+                                default: "No"
                             }])
                             .then(function(moreItems) {
-                                if (moreItems.again) {
+                                if (moreItems.again = "Yes") {
                                     getList();
                                 } else {
                                     proces.exit();

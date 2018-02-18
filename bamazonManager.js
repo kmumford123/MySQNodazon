@@ -19,7 +19,7 @@ function mgrList() {
         inquirer.prompt([{
             name: "Start",
             type: "list",
-            message: "Enter your product ID?",
+            message: "Choose from the list below?",
             choices: [
                 "View Products for Sale",
                 "View Low Inventory",
@@ -32,7 +32,6 @@ function mgrList() {
         .then(function(mgrselection) {
             connect.query("SELECT * from products", function(err, result) {
                 if (err) throw err;
-                // var prodQuantity = result[++mgrselection.Start].stock_quantity
 
                 if (mgrselection.Start === "View Products for Sale") {
                     console.log(result);
@@ -46,10 +45,12 @@ function mgrList() {
                         });
                 } else if (mgrselection.Start === "Add to Inventory") {
                     connect.query(
-                        "SELECT * FROM products where stock_quantity < 5",
-                        // function(err, lowInventory) {
-                        //     console.log(lowInventory);
-                        // }
+                        "SHOW TABLES",
+                        function(err, result) {
+                            if (err) throw err;
+                            console.log(result);
+                            console.log("Check out this young table");
+                        }
                     );
 
                 } else if (mgrselection.Start === "Add New Product") {
@@ -83,7 +84,7 @@ function mgrList() {
                                     stock_quantity: +addProduct.stock
                                 },
                                 function(error) {
-                                    if (error) throw err;
+                                    if (err) throw err;
                                     console.log("Product added successfully!");
                                 }
                             );
@@ -94,7 +95,6 @@ function mgrList() {
                     process.exit();
 
                 }
-                // getList();
             })
         })
     });
