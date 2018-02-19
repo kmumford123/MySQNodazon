@@ -34,14 +34,14 @@ function getList() {
                     if (err) throw err;
                     var prodQuantity = result[selection.Start - 1].stock_quantity
                     var salesUpdate = +selection.Units * result[selection.Units - 1].price
+                    var currentPsales = result[selection.Units - 1].product_sales
                     console.log(salesUpdate);
-
                     if (selection.Units <= prodQuantity) {
                         var qtyupdate = prodQuantity - selection.Units;
                         connect.query(
                             "UPDATE products SET ? WHERE ?", [{
                                     stock_quantity: qtyupdate,
-                                    product_sales: salesUpdate
+                                    product_sales: salesUpdate + currentPsales
                                 },
                                 {
                                     item_id: +selection.Start
