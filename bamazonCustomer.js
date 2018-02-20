@@ -10,10 +10,10 @@ var connect = mysql.createConnection({
 
 connect.connect(function(err) {
     if (err) throw err;
-    getList();
+    makePurchase();
 });
 
-function getList() {
+function makePurchase() {
     connect.query("SELECT * from products", function(err, result) {
         inquirer.prompt([{
                     name: "Start",
@@ -59,9 +59,9 @@ function getList() {
                                     }])
                                     .then(function(moreItems) {
                                         if (moreItems.again == "Yes") {
-                                            getList();
+                                            makePurchase();
                                         } else {
-                                            proces.exit();
+                                            process.exit();
                                         }
                                     });
                             });
@@ -76,9 +76,9 @@ function getList() {
                             }])
                             .then(function(moreItems) {
                                 if (moreItems.again = "Yes") {
-                                    getList();
+                                    makePurchase();
                                 } else {
-                                    proces.exit();
+                                    process.exit();
                                 }
                             });
                     }
