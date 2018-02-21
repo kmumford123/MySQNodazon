@@ -38,9 +38,10 @@ function spvsrList() {
 }
 
 function viewProductSales() {
-    connect.query("SELECT * FROM departments ", function(err, result) {
+    connect.query("SELECT department_id, department_name, over_head_costs, product_sales, over_head_costs - product_sales as total_profit from departments;", function(err, result) {
         if (err) throw err;
         console.table(result);
+        process.exit();
     })
 }
 

@@ -33,3 +33,23 @@ over_head_costs decimal(10,2),
 total_profit decimal(10,2),
 primary key (department_id)
 );
+
+
+
+;WITH sums AS 
+(
+   SELECT
+      over_head_costs, product_sales, 
+      SUM(over_head_costs) + SUM(product_sales) as Total,
+      SUM(over_head_costs) + SUM(product_sales) as Total1 
+   FROM
+      dbo.stud 
+   GROUP BY
+      over_head_costs, product_sales
+)
+SELECT 
+   over_head_costs, product_sales, 
+   total, total1, 
+   total+total1 AS 'total_profit' 
+FROM 
+   sums;

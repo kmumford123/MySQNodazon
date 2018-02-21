@@ -53,7 +53,7 @@ function makePurchase() {
                                 if (error) throw err;
                                 var deptValue = result[selection.Start - 1].department_name;
                                 console.log(`Transaction Complete!!! ${qtyupdate} left in stock.`);
-                                "UPDATE departments SET ?", [{
+                                "UPDATE departments SET ? WHERE ?", [{
                                         product_sales: salesUpdate + currentPsales
                                     },
                                     {
