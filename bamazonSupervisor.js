@@ -26,7 +26,53 @@ function spvsrList() {
                 "Create New Department"
             ]
         }]).then(function(supTools) {
-            console.log("this is working, sort of")
+            switch (supTools.supervisor) {
+                case "View Product Sales by Department":
+                    return viewProductSales();
+
+                case "Create New Department":
+                    return createDept();
+            }
         })
     })
+}
+
+function viewProductSales() {
+    connect.query("SELECT * FROM departments ", function(err, result) {
+        if (err) throw err;
+        console.table(result);
+    })
+}
+
+function createDept() {
+    {
+        connect.query("SELECT * from departments", function(err, deptResult) {
+            if (err) throw err;
+            inquirer.prompt([{
+                        name: "deptname",
+                        type: "input",
+                        message: "Enter the DEPARTMENT name"
+                    },
+                    {
+                        name: "ohcosts",
+                        type: "input",
+                        message: "Enter the Operating Cost Amount"
+                    },
+
+                ])
+                .then(function(addDept) {
+                    connect.query(
+                        "INSERT INTO departments SET ?", {
+                            product_name: addDept.deptname,
+                            over_head_costs: addDept.ohcosts,
+                        },
+                        function(error) {
+                            if (err) throw err;
+                            console.log("Product added successfully! \n");
+                            createDept();
+                        }
+                    );
+                });
+        })
+    }
 }
