@@ -16,6 +16,7 @@ connect.connect(function(err) {
 
 function makePurchase() {
     connect.query("SELECT item_id, product_name, department_name, price, stock_quantity from products", function(err, result) {
+        if (err) throw err;
         console.table(result);
         inquirer.prompt([{
                     name: "Start",
@@ -59,7 +60,7 @@ function makePurchase() {
                                         default: "Yes"
                                     }])
                                     .then(function(moreItems) {
-                                        if (moreItems.again = "Yes") {
+                                        if (moreItems.again == "Yes") {
                                             makePurchase();
                                         } else {
                                             console.log('See you later Alligator!!!');
@@ -76,7 +77,7 @@ function makePurchase() {
                                 default: "No"
                             }])
                             .then(function(moreItems) {
-                                if (moreItems.notagain = "Yes") {
+                                if (moreItems.notagain == "Yes") {
                                     makePurchase();
                                 } else {
                                     console.log('See you later Alligator!!!');

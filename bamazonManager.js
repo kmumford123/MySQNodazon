@@ -16,7 +16,7 @@ connect.connect(function(err) {
 
 function mgrList() {
     inquirer.prompt([{
-        name: "Start",
+        name: "invMgr",
         type: "list",
         message: "Choose from the list below?",
         choices: [
@@ -32,23 +32,23 @@ function mgrList() {
         connect.query("SELECT * from products", function(err, result) {
             if (err) throw err;
 
-            if (mgrselection.Start === "View Products for Sale") {
+            if (mgrselection.invMgr === "View Products for Sale") {
                 connect.query(
                     "SELECT item_id, product_name, department_name, price, stock_quantity FROM products",
                     function(err, viewProducts) {
                         console.table(viewProducts);
                         mgrList();
                     });
-            } else if (mgrselection.Start === "View Low Inventory") {
+            } else if (mgrselection.invMgr === "View Low Inventory") {
                 connect.query(
                     "SELECT * FROM products where stock_quantity < 5",
                     function(err, lowInventory) {
                         console.table(lowInventory);
                         mgrList();
                     });
-            } else if (mgrselection.Start === "Add to Inventory") {
+            } else if (mgrselection.invMgr === "Add to Inventory") {
                 inquirer.prompt([{
-                            name: "Start",
+                            name: "addInv",
                             type: "list",
                             message: "Enter your product ID?",
                             choices: function() {
@@ -62,62 +62,68 @@ function mgrList() {
                         }
                     ])
                     .then(function(inventoryAdd) {
-                        var confirmAdd = result[inventoryAdd.Start - 1].product_name;
-                        var addQuantity = result[inventoryAdd.Start - 1].stock_quantity + +inventoryAdd.Units;
+                        var confirmAdd = result[inventoryAdd.addInv - 1].product_name;
+                        var addQuantity = result[inventoryAdd.addInv - 1].stock_quantity + +inventoryAdd.Units;
                         connect.query(
                             "UPDATE products SET ? WHERE ?", [{
                                     stock_quantity: addQuantity
                                 },
                                 {
-                                    item_id: +inventoryAdd.Start
+                                    item_id: +inventoryAdd.addInv
                                 }
                             ],
                             function(err, result) {
                                 if (err) throw err;
-                                console.log(`${+inventoryAdd.Start} ${confirmAdd} added to inventory! \n `);
+                                console.log(`${+inventoryAdd.addInv} ${confirmAdd} added to inventory! \n `);
                                 mgrList();
                             }
                         );
                     });
 
-            } else if (mgrselection.Start === "Add New Product") {
-                inquirer.prompt([{
-                            name: "prodname",
-                            type: "input",
-                            message: "Enter the PRODUCT name"
-                        },
-                        {
-                            name: "deptname",
-                            type: "input",
-                            message: "Enter the DEPARTMENT name"
-                        },
-                        {
-                            name: "addprice",
-                            type: "input",
-                            message: "Enter the product PRICE"
-                        },
-                        {
-                            name: "stock",
-                            type: "input",
-                            message: "Enter the QUANTITY"
-                        }
-                    ])
-                    .then(function(addProduct) {
-                        connect.query(
-                            "INSERT INTO products SET ?", {
-                                product_name: addProduct.prodname,
-                                department_name: addProduct.deptname,
-                                price: +addProduct.addprice,
-                                stock_quantity: +addProduct.stock
+            } else if (mgrselection.invMgr === "Add New Product") {
+                connect.query("SELECT * from departments", function(err, deptResult) {
+                    if (err) throw err;
+                    inquirer.prompt([{
+                                name: "prodname",
+                                type: "input",
+                                message: "Enter the PRODUCT name"
                             },
-                            function(error) {
-                                if (err) throw err;
-                                console.log("Product added successfully! \n");
-                                mgrList();
+                            {
+                                name: "deptname",
+                                type: "list",
+                                message: "Select your department",
+                                choices: function() {
+                                    return deptResult.map((row) => `${row.department_name}`);
+                                }
+                            },
+                            {
+                                name: "addprice",
+                                type: "input",
+                                message: "Enter the product PRICE"
+                            },
+                            {
+                                name: "stock",
+                                type: "input",
+                                message: "Enter the QUANTITY"
                             }
-                        );
-                    });
 
+                        ])
+                        .then(function(addProduct) {
+                            connect.query(
+                                "INSERT INTO products SET ?", {
+                                    product_name: addProduct.prodname,
+                                    department_name: JSON.stringify(addProduct.deptname),
+                                    price: +addProduct.addprice,
+                                    stock_quantity: +addProduct.stock
+                                },
+                                function(error) {
+                                    if (err) throw err;
+                                    console.log("Product added successfully! \n");
+                                    mgrList();
+                                }
+                            );
+                        });
+                })
             } else {
                 console.log('See you later Alligator!!!');
                 process.exit();
