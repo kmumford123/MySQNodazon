@@ -1,5 +1,6 @@
 var inquirer = require("inquirer");
 var mysql = require('mysql');
+const cTable = require('console.table');
 
 var connect = mysql.createConnection({
     host: "localhost",
@@ -32,13 +33,17 @@ function mgrList() {
             if (err) throw err;
 
             if (mgrselection.Start === "View Products for Sale") {
-                console.log(result);
-                mgrList();
+                connect.query(
+                    "SELECT item_id, product_name, department_name, price, stock_quantity FROM products",
+                    function(err, viewProducts) {
+                        console.table(viewProducts);
+                        mgrList();
+                    });
             } else if (mgrselection.Start === "View Low Inventory") {
                 connect.query(
                     "SELECT * FROM products where stock_quantity < 5",
                     function(err, lowInventory) {
-                        console.log(lowInventory);
+                        console.table(lowInventory);
                         mgrList();
                     });
             } else if (mgrselection.Start === "Add to Inventory") {
@@ -57,7 +62,8 @@ function mgrList() {
                         }
                     ])
                     .then(function(inventoryAdd) {
-                        var addQuantity = result[inventoryAdd.Start - 1].stock_quantity + +inventoryAdd.Units
+                        var confirmAdd = result[inventoryAdd.Start - 1].product_name;
+                        var addQuantity = result[inventoryAdd.Start - 1].stock_quantity + +inventoryAdd.Units;
                         connect.query(
                             "UPDATE products SET ? WHERE ?", [{
                                     stock_quantity: addQuantity
@@ -68,7 +74,7 @@ function mgrList() {
                             ],
                             function(err, result) {
                                 if (err) throw err;
-                                console.log("Inventory Added");
+                                console.log(`${+inventoryAdd.Start} ${confirmAdd} added to inventory! \n `);
                                 mgrList();
                             }
                         );
@@ -106,7 +112,7 @@ function mgrList() {
                             },
                             function(error) {
                                 if (err) throw err;
-                                console.log("Product added successfully!");
+                                console.log("Product added successfully! \n");
                                 mgrList();
                             }
                         );

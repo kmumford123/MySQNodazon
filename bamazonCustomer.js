@@ -1,5 +1,6 @@
 var inquirer = require("inquirer");
 var mysql = require('mysql');
+const cTable = require('console.table');
 
 var connect = mysql.createConnection({
     host: "localhost",
@@ -14,11 +15,12 @@ connect.connect(function(err) {
 });
 
 function makePurchase() {
-    connect.query("SELECT * from products", function(err, result) {
+    connect.query("SELECT item_id, product_name, department_name, price, stock_quantity from products", function(err, result) {
+        console.table(result);
         inquirer.prompt([{
                     name: "Start",
                     type: "list",
-                    message: "Enter your product ID?",
+                    message: "Enter your Item ID?",
                     choices: function() {
                         return result.map((row) => `${row.item_id}`);
                     }
@@ -32,12 +34,12 @@ function makePurchase() {
             .then(function(selection) {
                 connect.query("SELECT * from products", function(err, result) {
                     if (err) throw err;
-                    var prodQuantity = result[selection.Start - 1].stock_quantity
-                    var salesUpdate = +selection.Units * result[selection.Units - 1].price
-                    var currentPsales = result[selection.Units - 1].product_sales
-                    console.log(salesUpdate);
+                    var prodQuantity = result[selection.Start - 1].stock_quantity;
                     if (selection.Units <= prodQuantity) {
+                        var salesUpdate = +selection.Units * result[selection.Units - 1].price;
+                        var currentPsales = result[selection.Units - 1].product_sales;
                         var qtyupdate = prodQuantity - selection.Units;
+                        console.log(salesUpdate);
                         connect.query(
                             "UPDATE products SET ? WHERE ?", [{
                                     stock_quantity: qtyupdate,
@@ -51,16 +53,16 @@ function makePurchase() {
                                 if (error) throw err;
                                 console.log(`Transaction Complete!!! ${qtyupdate} left in stock.`);
                                 inquirer.prompt([{
-                                        type: "list",
+                                        type: "confirm",
                                         name: "again",
                                         message: "Would you like to purchase another?",
-                                        choices: ["Yes", "No"],
                                         default: "Yes"
                                     }])
                                     .then(function(moreItems) {
-                                        if (moreItems.again == "Yes") {
+                                        if (moreItems.again = "Yes") {
                                             makePurchase();
                                         } else {
+                                            console.log('See you later Alligator!!!');
                                             process.exit();
                                         }
                                     });
@@ -68,16 +70,16 @@ function makePurchase() {
                     } else {
                         console.log('Insufficient Quantity, go around the kona!!!');
                         inquirer.prompt([{
-                                type: "list",
-                                name: "again",
-                                message: "Would you like to purchase another?",
-                                choices: ["Yes", "No"],
+                                type: "confirm",
+                                name: "notagain",
+                                message: "Try again?",
                                 default: "No"
                             }])
                             .then(function(moreItems) {
-                                if (moreItems.again = "Yes") {
+                                if (moreItems.notagain = "Yes") {
                                     makePurchase();
                                 } else {
+                                    console.log('See you later Alligator!!!');
                                     process.exit();
                                 }
                             });
