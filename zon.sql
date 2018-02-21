@@ -35,21 +35,9 @@ primary key (department_id)
 );
 
 
-
-;WITH sums AS 
-(
-   SELECT
-      over_head_costs, product_sales, 
-      SUM(over_head_costs) + SUM(product_sales) as Total,
-      SUM(over_head_costs) + SUM(product_sales) as Total1 
-   FROM
-      dbo.stud 
-   GROUP BY
-      over_head_costs, product_sales
-)
-SELECT 
-   over_head_costs, product_sales, 
-   total, total1, 
-   total+total1 AS 'total_profit' 
-FROM 
-   sums;
+INSERT INTO departments (department_name, over_head_costs)
+VALUES ("Sports & Outdoors",23000.00),
+("Electronic Accessories", 77030.23),
+("Books & Audible", 34023.23),
+("Clothing, Shoes & Jewelry", 120234.23),
+("Health and Household", 50000);

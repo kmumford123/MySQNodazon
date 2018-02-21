@@ -67,7 +67,7 @@ function makePurchase() {
                                         default: "Yes"
                                     }])
                                     .then(function(moreItems) {
-                                        if (moreItems.again == "Yes") {
+                                        if (moreItems.again === "Yes") {
                                             makePurchase();
                                         } else {
                                             console.log('See you later Alligator!!!');
@@ -84,7 +84,7 @@ function makePurchase() {
                                 default: "No"
                             }])
                             .then(function(moreItems) {
-                                if (moreItems.notagain == "Yes") {
+                                if (moreItems.notagain) {
                                     makePurchase();
                                 } else {
                                     console.log('See you later Alligator!!!');
