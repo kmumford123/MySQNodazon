@@ -43,7 +43,6 @@ function makePurchase() {
                         console.log(salesUpdate);
                         connect.query(
                             "UPDATE products SET ? WHERE ?", [{
-                                    stock_quantity: qtyupdate,
                                     product_sales: salesUpdate + currentPsales
                                 },
                                 {
@@ -52,7 +51,15 @@ function makePurchase() {
                             ],
                             function(error) {
                                 if (error) throw err;
+                                var deptValue = result[selection.Start - 1].department_name;
                                 console.log(`Transaction Complete!!! ${qtyupdate} left in stock.`);
+                                "UPDATE departments SET ?", [{
+                                        product_sales: salesUpdate + currentPsales
+                                    },
+                                    {
+                                        item_id: JSON.Start(deptValue)
+                                    }
+                                ],
                                 inquirer.prompt([{
                                         type: "confirm",
                                         name: "again",
