@@ -57,7 +57,7 @@ function makePurchase() {
                                         product_sales: salesUpdate + currentPsales
                                     },
                                     {
-                                        item_id: JSON.Start(deptValue)
+                                        item_id: JSON.stringify(deptValue)
                                     }
                                 ],
                                 inquirer.prompt([{
